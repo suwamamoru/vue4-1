@@ -17,42 +17,67 @@
           <td><input type="text" v-model="password" placeholder="Password"></td>
         </tr>
       </table>
+      <p class="error" v-show="errorMessage">このユーザーまたはメールアドレスは既に登録されています。</p>
       <div class="buttons">
-        <button class="signup-btn" @click="signupInput(signupInfoData)">新規登録</button>
+        <button class="signup-btn" @click="signupInput()">新規登録</button>
         <br><router-link to="/login" class="login-guide">ログインはこちらから</router-link>
       </div>
       <div class="copyright">
         <p>Copyright ©️2021 oo Inc. All rights reserved.</p>
       </div>
     </form>
-    {{$store.getters.signupInfoData}}
   </div>
 </template>
 
 <script>
+import firebase from 'firebase'
+
 export default {
   data() {
     return {
       user: '',
       email: '',
       password: '',
-      signupInfoData: []
+      users: [],
+      registration: {
+        user: '',
+        email: ''
+      },
+      errorMessage: false
     }
   },
+  created() {
+    this.getData()
+  },
   methods: {
-    signupInput(signupInfoData) {
+    getData() {
+      const db = firebase.firestore()
+      db.collection('users').onSnapshot((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          this.users.push(doc.data())
+          this.users.forEach(userData => {
+            this.registration.user = userData.user
+            this.registration.email = userData.email
+          })
+        })
+      })
+    },
+    signupInput() {
       if(this.user === '' | this.email === '' | this.password === '')return
-      const signupInfo = {
-        user: this.user,
-        email: this.email,
-        password: this.password
+      const db = firebase.firestore()
+      if(this.registration.user === this.user || this.registration.email === this.email) {
+        this.errorMessage = true
+      } else {
+        this.errorMessage = false
+        db.collection('users').add({
+          user: this.user,
+          email: this.email,
+          password: this.password
+        })
+        this.user = '',
+        this.email = '',
+        this.password = ''
       }
-      this.signupInfoData.push(signupInfo)
-      this.user = ''
-      this.email = ''
-      this.password = ''
-      this.$store.dispatch("getSignupInfoData", signupInfoData)
-      return this.$store.getters.signupInfoData
     }
   }
 }
@@ -61,6 +86,11 @@ export default {
 <style>
 table {
   margin: auto;
+}
+
+.error {
+  font-size: 12px;
+  color: red;
 }
 
 .buttons {

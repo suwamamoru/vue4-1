@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    signupInfoData: []
+    signupInfoData: {}
   },
   mutations: {
     setSignupInfoData(state, signupInfoData) {
