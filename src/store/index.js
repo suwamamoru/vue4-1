@@ -8,8 +8,7 @@ export default new Vuex.Store({
   state: {
     user: '',
     email: '',
-    password: '',
-    querySnapshotUser: []
+    password: ''
   },
   mutations: {
     setUser(state, user) {
