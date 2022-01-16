@@ -1,25 +1,60 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import firebase from 'firebase'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    signupInfoData: {}
+    user: '',
+    email: '',
+    password: '',
+    querySnapshotUser: []
   },
   mutations: {
-    setSignupInfoData(state, signupInfoData) {
-      state.signupInfoData = signupInfoData
-    }
+    setUser(state, user) {
+      state.user = user
+    },
+    setEmail(state, email) {
+      state.email = email
+    },
+    setPassword(state, password) {
+      state.password = password
+    },
   },
   actions: {
-    getSignupInfoData: ({commit}, signupInfoData) => {
-      commit('setSignupInfoData', signupInfoData)
+    getUser: ({commit}, user) => {
+      commit('setUser', user)
+    },
+    getEmail: ({commit}, email) => {
+      commit('setEmail', email)
+    },
+    getPassword: ({commit}, password) => {
+      commit('setPassword', password)
+    },
+    signupInput({state}) {
+      const db = firebase.firestore()
+      try {
+        db.collection('users').add({
+          user: state.user,
+          email: state.email,
+          password: state.password
+        })
+        console.log('Document writing was successful')
+      } catch(error) {
+        console.error("Error adding document: " , error)
+      }
     }
   },
   getters: {
-    signupInfoData: state => {
-      return state.signupInfoData
+    user: state => {
+      return state.user
+    },
+    email: state => {
+      return state.email
+    },
+    password: state => {
+      return state.password
     }
   }
 })

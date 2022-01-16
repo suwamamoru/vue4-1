@@ -17,7 +17,7 @@
           <td><input type="text" v-model="password" placeholder="Password"></td>
         </tr>
       </table>
-      <p class="error" v-show="errorMessage">このユーザーまたはメールアドレスは既に登録されています。</p>
+      <p class="error" v-show="errorShow">{{errorMessage}}</p>
       <div class="buttons">
         <button class="signup-btn" @click="signupInput()">新規登録</button>
         <br><router-link to="/login" class="login-guide">ログインはこちらから</router-link>
@@ -35,19 +35,43 @@ import firebase from 'firebase'
 export default {
   data() {
     return {
-      user: '',
-      email: '',
-      password: '',
       users: [],
       registration: {
         user: '',
         email: ''
       },
-      errorMessage: false
+      errorShow: false,
+      errorMessage: 'このユーザーまたはメールアドレスは既に登録されています。'
     }
   },
   created() {
     this.getData()
+  },
+  computed: {
+    user: {
+      get() {
+        return this.$store.getters.user
+      },
+      set(value) {
+        this.$store.dispatch("getUser", value)
+      }
+    },
+    email: {
+      get() {
+        return this.$store.getters.email
+      },
+      set(value) {
+        this.$store.dispatch("getEmail", value)
+      }
+    },
+    password: {
+      get() {
+        return this.$store.getters.password
+      },
+      set(value) {
+        this.$store.dispatch("getPassword", value)
+      }
+    }
   },
   methods: {
     getData() {
@@ -63,20 +87,11 @@ export default {
       })
     },
     signupInput() {
-      if(this.user === '' | this.email === '' | this.password === '')return
-      const db = firebase.firestore()
       if(this.registration.user === this.user || this.registration.email === this.email) {
-        this.errorMessage = true
+        this.errorShow = true
       } else {
-        this.errorMessage = false
-        db.collection('users').add({
-          user: this.user,
-          email: this.email,
-          password: this.password
-        })
-        this.user = '',
-        this.email = '',
-        this.password = ''
+        this.errorShow = false
+        this.$store.dispatch('signupInput')
       }
     }
   }
