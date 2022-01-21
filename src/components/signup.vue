@@ -44,9 +44,6 @@ export default {
       errorMessage: 'このユーザーまたはメールアドレスは既に登録されています。'
     }
   },
-  created() {
-    this.getData()
-  },
   computed: {
     user: {
       get() {
@@ -87,6 +84,7 @@ export default {
       })
     },
     signupInput() {
+      this.getData()
       if(this.registration.user === this.user || this.registration.email === this.email) {
         this.errorShow = true
       } else {

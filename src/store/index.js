@@ -32,17 +32,14 @@ export default new Vuex.Store({
       commit('setPassword', password)
     },
     signupInput({state}) {
-      const db = firebase.firestore()
-      try {
-        db.collection('users').add({
-          user: state.user,
-          email: state.email,
-          password: state.password
-        })
-        console.log('Document writing was successful')
-      } catch(error) {
-        console.error("Error adding document: " , error)
-      }
+    const db = firebase.firestore()
+      db.collection('users').add({
+        user: state.user,
+        email: state.email,
+        password: state.password
+      })
+      .then(() => console.log("Document writing was successful"))
+      .catch((error) => console.error("Error adding document: ", error))
     }
   },
   getters: {
